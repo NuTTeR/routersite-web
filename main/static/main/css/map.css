@@ -1,0 +1,56 @@
+
+#legend {
+    z-index: 1;
+    background: none repeat scroll 0% 0% rgb(255, 255, 255);
+    position: absolute;
+    list-style: none outside none;
+    border: 1px solid gray;
+    padding: 0 10px 5px 10px;
+    margin: 0;
+    right: 5px;
+    top: 130px;
+    min-width: 300px;
+    max-width: 300px;
+    MAX-HEIGHT: calc(100% - 200px);
+    overflow: auto;
+}
+#legend li {
+    padding: 0px;
+    margin: 0 0 0px 0;
+}
+#l-hide {
+    width: 100%;
+    text-align: right;
+    font-size: small;
+    margin: 7px 0 -20px 0;
+    position: relative;
+}
+#l-show {
+    z-index: 1;
+    background: none repeat scroll 0% 0% rgb(255, 255, 255);
+    position: absolute;
+    border: 1px solid gray;
+    padding: 7px 10px;
+    margin: 0px;
+    right: 5px;
+    top: 130px;
+    text-align: right;
+    font-size: small;
+}
+#l-container a:link {
+    color:#33348e; text-decoration: none;
+}
+#l-container a:visited {
+    color:#33348e; text-decoration: none;
+}
+#l-container a:hover {
+    color:#33348e; text-decoration: none;
+    }
+#l-container a:active {
+    color:#7476b4; text-decoration: underline;
+}
+#l-km {
+    font-size: small;
+    padding: 0 0 0 20px;
+    color: green;
+}

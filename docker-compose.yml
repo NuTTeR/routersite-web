@@ -1,0 +1,26 @@
+version: '3'
+services:
+  nginx:
+    image: nginx:latest
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ".:/src:"
+      - "./staticfiles:/static:"
+      - "./config/nginx:/etc/nginx/conf.d"
+    depends_on:
+      - web
+  web:
+    build: .
+    restart: always
+    volumes:
+     - ".:/src:z"
+    command: bash -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn routersite.wsgi --workers=3 --timeout 18000 -b 0.0.0.0:8000"
+    environment:
+     - DJANGO_DEBUG=0
+     - PYTHONUNBUFFERED=1
+     - DJANGO_SECRET_KEY
+     - DJANGO_LDAP_PASSWORD
+    expose:
+     - "8000"

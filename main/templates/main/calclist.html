@@ -1,0 +1,63 @@
+{% extends "main/includes/base.html" %}
+{% load l10n %}
+{% load url_replace %}
+
+{% block title %}История расчетов{% endblock %}
+
+{% block content %}
+    <h5>История расчетов</h5>
+    <div class="container">
+        <div class="row point-small-info">
+            <div class="col s4">
+                <form method="get" id="calclistform">
+                    {{form}}
+                </form>
+            </div>
+        </div>
+
+        {% if route_sets %}
+          <div class="row">
+            {% for route_set in route_sets %}
+            <div class="col s12 m6">
+              <div class="card">
+                <div class="card-content">
+                  <span class="card-title">{{route_set}}</span>
+                  <blockquote>{{route_set.store.ns_code}} {{route_set.store.name}}</blockquote>
+                  <p>{{route_set.username.first_name}} {{route_set.username.last_name}} {{route_set.creation_date|localize}}</p>
+                </div>
+                <div class="card-action">
+                  <a href="{% url 'main:viewroute' %}?id={{route_set.id}}">Просмотр</a>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <ul class="pagination center-align">
+            {% if route_sets.number != 1 %}
+              <li class="waves-effect"><a href="?{% url_replace page=1 %}"><i class="material-icons">first_page</i></a></li>
+            {% else %}
+              <li class="disabled"><a href="#"><i class="material-icons">first_page</i></a></li>
+            {% endif %}
+            {% if route_sets.has_previous %}
+                <li class="waves-effect"><a href="?{% url_replace page=route_sets.previous_page_number %}"><i class="material-icons">chevron_left</i></a></li>
+            {% else %}
+                <li class="disabled"><a href="#"><i class="material-icons">chevron_left</i></a></li>
+            {% endif %}
+            <li>{{ route_sets.number }} из {{ route_sets.paginator.num_pages }}</li>
+            {% if route_sets.has_next %}
+                <li class="waves-effect"><a href="?{% url_replace page=route_sets.next_page_number %}"><i class="material-icons">chevron_right</i></a></li>
+            {% else %}
+                <li class="disabled"><a href="#"><i class="material-icons">chevron_right</i></a></li>
+            {% endif %}
+            {% if route_sets.number != route_sets.paginator.num_pages %}
+              <li class="waves-effect"><a href="?{% url_replace page=route_sets.paginator.num_pages %}"><i class="material-icons">last_page</i></a></li>
+            {% else %}
+              <li class="disabled"><a href="#"><i class="material-icons">last_page</i></a></li>
+            {% endif %}
+        </ul>
+        {% else %}
+          <h5 class="center-align">Нет ни одного расчета, <a href="{% url 'main:calcnew' %}">создать новый?</a></h5>
+          <br>
+        {% endif %}
+    </div>
+{% endblock %}

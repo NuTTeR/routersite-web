@@ -1,0 +1,15 @@
+{% extends "main/includes/base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+    {% for alog in AccLogs %}
+        <p>{{ alog.host_ip }}</p>
+        <p>{{ alog.host_useragent }}</p>
+        <p>{{ alog.host_url }}</p>
+        <p>{{ alog.access_date }}</p>
+        <p>{{ alog.log_comment|safe }}</p>
+        <br><br>
+    {% endfor %}
+{% endblock %}
+

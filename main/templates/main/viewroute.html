@@ -1,0 +1,195 @@
+{% extends "main/includes/base.html" %}
+{% load static %}
+
+{% block title %}Маршрут на карте {{route_set.get_short_desc}}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/css/leaflet.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'main/css/leaflet-routing-machine.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'main/css/leaflet.extra-markers.min.css' %}" />
+<script type="text/javascript" src="{% static 'main/js/leaflet.js' %}"></script>
+<script type="text/javascript" src="{% static 'main/js/leaflet-routing-machine.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'main/js/leaflet.extra-markers.min.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div><h5 class="route-inline-title">Маршрут на карте</h5><h6 class="route-inline-title"> {{route_set}}</h6></div>
+
+<div class="map-container">
+    <ul class="collapsible route-info">
+    <li class="active single-route-info">
+      <div class="collapsible-header"><i class="material-icons">info</i>Информация</div>
+      <div class="collapsible-body">
+          <form method="get" id="routeform">
+              {{form.id.as_hidden}}
+              <!--Выбор маршрута-->
+              <div class="row">
+                  <div class="input-field col s6">
+                      {{form.gr}}
+                  </div>
+                  <div class="input-field col s6">
+                      {{form.reis}}
+                  </div>
+              </div>
+          </form>
+          <table class="striped">
+              <tr>
+                <td>Автомобиль</td>
+                <td>{{real_auto.name}}</td>
+              </tr>
+              <tr>
+                <td>Вместимость</td>
+                <td>{{real_auto.used_capacity}}\{{real_auto.capacity}} лот</td>
+              </tr>
+              <tr>
+                <td>Протяженность</td>
+                <td>{{reis_stat.all_distance}} км</td>
+              </tr>
+              <tr>
+                <td>Длительность</td>
+                <td>{{reis_stat.all_time}}</td>
+              </tr>
+              <tr>
+                <td>Количество ТТ</td>
+                <td>{{reis_stat.delivery_dots_count}}</td>
+              </tr>
+              <tr>
+                <td>Смена водителя</td>
+                <td>{{real_auto.used_driver_limit}} из {{real_auto.driver_limit}}</td>
+              </tr>
+          </table>
+      </div>
+    </li>
+    <li class="single-route-directions">
+      <div class="collapsible-header"><i class="material-icons">directions</i>Описание маршрута</div>
+      <div class="collapsible-body">
+        <table>
+        {% for point in route %}
+            <tr>
+                <td>
+                    <ul>
+                        {% if point.wait_time %}
+                        <li><div class="row point-small-info"><i>
+                            <div class="col s6 right-align">Ожидание</div>
+                            <div class="col s6 left-align point-time">{{point.wait_time}}</div>
+                        </i></div></li>
+                        {% endif %}
+                        <li><b>{{point.num}}:</b> {% if point.type == 'store' %}<i class="tiny material-icons">store</i>{% endif %} {{point.name}}</li>
+                        <li class="point-address">{{point.address}}</li>
+                        <li><div class="row point-small-info">
+                            <div class="col s6 point-time">{%if not point.time_in %}Выезд{%else%}{{point.time_in}} -{%endif%} {{point.time_out}}</div>
+                            {%if not forloop.first%}<div class="col s6 right-align point-distance">+{{point.distance}}км</div>{%endif%}
+                        </div></li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+      </div>
+    </li>
+  {% if unallocated_dots %}
+    <li class="single-route-unallocated">
+      <div class="collapsible-header"><i class="material-icons">warning</i>Нераспределенные точки</div>
+      <div class="collapsible-body">
+        <table>
+        {% for point in unallocated_dots %}
+            <tr>
+                <td>
+                    <ul>
+                        <li><b>{{forloop.counter}}:</b> {{point.name}}</li>
+                        <li class="point-address">{{point.address}}</li>
+                        <li><div class="row point-small-info">
+                            <div class="point-time">Окно приемки: {{point.window_in}} - {{point.window_out}}</div>
+                            <div class="point-time">Заказ {{point.quantity}} лот</div>
+                        </div></li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+      </div>
+    </li>
+  {% endif %}
+    <li class="single-route-all-info">
+      <div class="collapsible-header"><i class="material-icons">timeline</i>Общая статистика</div>
+      <div class="collapsible-body">
+          <table>
+              <tr>
+                  <td>Распределено точек</td><td>{{calculate_stat.get_allocated_delivery_dots_count}}\{{calculate_stat.get_delivery_dots_count}}</td>
+              </tr>
+              <tr>
+                  <td>Нераспределенных приоритетных точек</td><td>{{calculate_stat.priority_bad}}</td>
+              </tr>
+              <tr>
+                  <td>Нераспределенных обычных точек</td><td>{{calculate_stat.regular_bad}}</td>
+              </tr>
+              <tr>
+                  <td>Автомобилей использовано</td><td>{{calculate_stat.auto_count}}</td>
+              </tr>
+              <tr>
+                  <td>Рейсов использовано</td><td>{{calculate_stat.reis_count}}</td>
+              </tr>
+              <tr>
+                  <td>Временные затраты всего</td><td>{{calculate_stat.costs}}</td>
+              </tr>
+          </table>
+          <div class="center-align"><a href="{% url 'main:viewroute' %}?id={{calc_id}}&save=csv" download>Скачать расчет (csv)</a></div>
+      </div>
+    </li>
+  </ul>
+    <div id="map"></div>
+</div>
+
+
+{% endblock %}
+
+{% block footer %}
+<script>
+	map = new L.Map('map');
+	var osmUrl='{{ MAP_TILES_SERVER_URL }}/tile/{z}/{x}/{y}.png';
+	var osmAttrib=' | Данные карт © <a href="https://openstreetmap.org">OpenStreetMap</a>';
+	var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 17, attribution: osmAttrib});
+	map.setView(new L.LatLng(52.599621, 39.561885),13);
+	map.addLayer(osm);
+
+    {# Создание маршрута (линии маршрута) #}
+    L.Routing.control({
+      waypoints: [
+          {% for point in route %}
+            L.latLng({{point.latitude}},{{point.longtitude}}),
+          {% endfor %}
+      ],
+      draggableWaypoints: false,
+      addWaypoints: false,
+      fitSelectedRoutes: true,
+      show: false,
+      createMarker: function() { return null; },
+      router: new L.Routing.OSRMv1({
+        serviceUrl: "{{ OSRM_SERVER_URL }}/route/v1",
+        useHints: false,
+      }),
+      lineOptions: {
+        styles: [{color: 'purple', opacity: 1, weight: 5}]
+      }
+    }).addTo(map);
+
+    {# Добавление точек на маршрут с их описанием #}
+    {% for point in route %}
+        L.marker([{{point.latitude}},{{point.longtitude}}], {
+          icon: L.ExtraMarkers.icon({
+            icon: 'fa-number',
+            number: {{point.num}},
+            {% if point.type == 'store' %}
+                markerColor: 'green',
+                shape: 'square',
+            {% else %}
+                markerColor: 'blue',
+            {% endif %}
+           })
+        })
+        .bindTooltip("{{point.name}}<br>{{point.address}}")
+        .bindPopup("<b>{{point.name}}</b><br>{{point.address}}")
+        .addTo(map);
+    {% endfor %}
+</script>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends "main/includes/base.html" %}
+
+{% block title %}Новый расчет{% endblock %}
+
+{% block content %}
+    <h5>Новый расчет</h5>
+    <div class="container">
+        {{ form.non_field_errors }}
+        <form method="post" enctype="multipart/form-data" autocomplete="off">
+            {% csrf_token %}
+            <table class="striped">
+                <!--Склад-->
+                <tr>
+                    {{ form.store.errors }}
+                    <td>{{form.store.label}}</td>
+                    <td>
+                        <div class="input-field">
+                            {{form.store}}
+                        </div>
+                    </td>
+                </tr>
+                <!-- Параметры расчета -->
+                <tr>
+                    {{ form.with_return.errors }}
+                    {{ form.high_accuracy.errors }}
+                    {{ form.auto_min.errors }}
+                    <td>Параметры</td>
+                    <td>
+                        <div class="row">
+                            <!-- Расчет с возвратом на склад? -->
+                            <div class="col s4">
+                                <label>{{form.with_return}}<span>{{form.with_return.label}}</span></label>
+                            </div>
+                            <!-- Высокая точность расчета? -->
+                            <div class="col s4">
+                                <label>{{form.high_accuracy}}<span>{{form.high_accuracy.label}}<i class="material-icons tooltipped" data-position="bottom"
+                                data-tooltip="Выше точность, но больше время расчета (Актуально от 6 обычных машин и более)">help_outline</i></span></label>
+                            </div>
+                            <!-- Минимизация кол-ва статических авто -->
+                            <div class="col s4">
+                                <label>{{form.auto_min}}<span>{{form.auto_min.label}}<i class="material-icons tooltipped" data-position="bottom"
+                                data-tooltip="Хуже точность, но алгоритм пытается загрузить обычные авто целиком, прежде чем перейти к следующему авто">help_outline</i></span></label>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <!-- Параметры нестрогих окон доставки -->
+                <tr>
+                    {{ form.early_arrival.errors }}
+                    {{ form.lately_arrival.errors }}
+                    <td>Нестрогие окна доставки <i class="material-icons tooltipped" data-position="bottom"
+                        data-tooltip="На сколько автомобилю можно приехать раньше начала окна доставки или опоздать в окно доставки (исключая приоритетные магазины)">help_outline</i></td>
+                    <td>
+                        <div class="row input-field">
+                            <div class="col s6"><label>{{form.early_arrival.label}}</label>{{form.early_arrival}}</div>
+                            <div class="col s6"><label>{{form.lately_arrival.label}}</label>{{form.lately_arrival}}</div>
+                        </div>
+                    </td>
+                </tr>
+                <!-- Динамические авто -->
+                <tr>
+                    {{ form.dyn_auto_count_max.errors }}
+                    {{ form.dyn_auto_capacity.errors }}
+                    {{ form.dyn_auto_reis_max.errors }}
+                    {{ form.dyn_auto_driver_limit.errors }}
+                    <td>Динамические авто <i class="material-icons tooltipped" data-position="bottom"
+                        data-tooltip="При недостатке машин будут добавлены новые, согласно выбранным параметрам">help_outline</i></td>
+                    <td>
+                        <div class="row input-field">
+                            <div class="col s3"><label>{{form.dyn_auto_count_max.label}}</label>{{form.dyn_auto_count_max}}</div>
+                            <div class="col s3"><label>{{form.dyn_auto_capacity.label}}</label>{{form.dyn_auto_capacity}}</div>
+                            <div class="col s3"><label>{{form.dyn_auto_reis_max.label}}</label>{{form.dyn_auto_reis_max}}</div>
+                            <div class="col s3"><label>{{form.dyn_auto_driver_limit.label}}</label>{{form.dyn_auto_driver_limit}}</div>
+                        </div>
+                    </td>
+                </tr>
+                <!-- Выбор файла для загрузки (авто) -->
+                <tr>
+                    {{ form.auto_list.errors }}
+                    <td>{{form.auto_list.label}}</td>
+                    <td>
+                        <div class="file-field">
+                          <div class="btn">
+                            <span>Выбрать файл</span>
+                            {{form.auto_list}}
+                          </div>
+                          <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text">
+                          </div>
+                        </div>
+                    </td>
+                </tr>
+                <!--Выбор файла для загрузки (Точки доставки) -->
+                <tr>
+                    {{ form.clients_list.errors }}
+                    <td>{{form.clients_list.label}}</td>
+                    <td>
+                        <div class="file-field">
+                          <div class="btn">
+                            <span>Выбрать файл</span>
+                            {{form.clients_list}}
+                          </div>
+                          <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text">
+                          </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <br>
+
+            <center><button class="btn waves-effect waves-light" type="submit">Отправить<i class="material-icons right">send</i></button></center>
+        </form>
+
+    </div>
+{% endblock %}
+$(document).ready(function() {
+  $(function() {
+    $.ajax({
+      type: 'GET',
+      url: '/ajax/getStores',
+      success: function(response) {
+        $('#id_store').autocomplete({
+          data: response,
+          //limit: 5,
+          minLength: 1,
+        });
+      }
+    });
+  });
+});
+{% block footer %}
+<script>
+$("#id_store").each(function () {
+    let self = this;
+    //$(this).autocomplete();
+    $(this).on("input change", function () {
+        if ($(this).val().length < 1) {
+            $(self).autocomplete("updateData", {'':''});
+            return;
+        }
+        $.ajax({
+            url: '/ajax/getStores/',
+            type: 'GET',
+            data: {"term": $(this).val()},
+            success: function (data) {
+                $(self).autocomplete("updateData", data);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

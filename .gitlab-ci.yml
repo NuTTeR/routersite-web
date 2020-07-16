@@ -1,0 +1,18 @@
+before_script:
+  - apk update
+  - apk add openssh-client
+  # Setup SSH deploy keys
+  - eval "$(ssh-agent -s)"
+  - echo "$SSH_PRIVATE_KEY" | ssh-add - > /dev/null
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    
+production:
+  type: deploy
+  environment:
+    name: staging
+    url: id-dev-ai.id.local
+  script:
+    - ssh gitlab-runner@id-dev-ai.id.local "cd /mnt/osm-ext/routersite-web && git fetch --all && git reset --hard origin/master && rm -f .env && echo 'DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}' >> .env && echo 'DJANGO_LDAP_PASSWORD=${DJANGO_LDAP_PASSWORD}' >> .env && docker-compose down && docker-compose up --build -d && exit"
+  only:
+    - master

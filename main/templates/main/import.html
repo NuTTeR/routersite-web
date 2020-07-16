@@ -1,0 +1,52 @@
+{% extends "main/includes/base.html" %}
+
+{% block title %}Импорт{% endblock %}
+
+{% block content %}
+    <h5>Импорт</h5>
+    <div class="container">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <table class="striped">
+                <!--База для импорта-->
+                <tr>
+                    <td>{{form.table.label}}</td>
+                    <td>{{form.table}}</td>
+                </tr>
+                <!--Выбор файла для загрузки-->
+                <tr>
+                    <td>{{form.file.label}}</td>
+                    <td>
+                        <div class="file-field">
+                          <div class="btn">
+                            <span>Выбрать файл</span>
+                            {{form.file}}
+                          </div>
+                          <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text">
+                          </div>
+                        </div>
+                    </td>
+                </tr>
+                <!--Перезаписывать имеющиеся-->
+                <tr>
+                    <td>{{form.rewrite.label}}</td>
+                    <td><label>{{form.rewrite}}<span></span></label></td>
+                </tr>
+
+<!--                {% for field in form %}-->
+<!--                    <tr>-->
+<!--                        <td>{{field.label}}</td>-->
+<!--                        <td><label>{{field}}<span></span></label></td>-->
+<!--                    </tr>-->
+<!--                {% endfor %}-->
+            </table>
+            <br>
+
+            <center><button class="btn waves-effect waves-light" type="submit">Отправить<i class="material-icons right">send</i></button></center>
+        </form>
+
+
+    </div>
+{% endblock %}
+

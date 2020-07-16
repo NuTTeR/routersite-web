@@ -1,0 +1,17 @@
+{% extends "main/includes/base.html" %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+    <h5>Вход</h5>
+    <div class="container">
+        <p>Для входа используйте свою почту @org.ru и пароль, как при входе в Windows. В случае проблем обратитесь в отдел АИС.</p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button class="btn waves-effect waves-light" type="submit">Отправить<i class="material-icons right">send</i></button>
+        </form>
+    </div>
+{% endblock %}
+

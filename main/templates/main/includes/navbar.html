@@ -1,0 +1,19 @@
+{% load static %}
+<nav class="blue darken-2" role="navigation">
+    <div class="nav-wrapper"><a id="logo-container" href="/" class="brand-logo"><img src="{% static 'main/images/logo.png' %}" /></a>
+      <ul class="right">
+          {# <li><a href="/">Главная</a></li> #}
+          <li><a href="{% url 'main:map' %}">Карта</a></li>
+          {% if user.is_authenticated %}
+              {# <li><a href="/account">{{user.username}}</a></li> #}
+              <li><a href="{% url 'main:calcnew' %}">Новый расчет</a></li>
+              <li><a href="{% url 'main:calclist' %}">История расчетов</a></li>
+              <li><a href="{% url 'main:import' %}">Импорт</a></li>
+              <li><a href="{% url 'main:logout' %}">Выйти</a></li>
+          {% else %}
+              <li><a href="{% url 'main:login' %}">Войти</a></li>
+              {# <li><a href="{% url 'main:register' %}">Регистрация</a></li> #}
+          {% endif %}
+      </ul>
+    </div>
+</nav>

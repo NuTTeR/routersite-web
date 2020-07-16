@@ -1,0 +1,76 @@
+{% extends "main/includes/base.html" %}
+{% load static %}
+
+{% block title %}Карта{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/css/leaflet.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'main/css/leaflet.extra-markers.min.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'main/css/MarkerCluster.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'main/css/MarkerCluster.Default.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'main/css/leaflet.photon.css' %}" />
+<script type="text/javascript" src="{% static 'main/js/leaflet.js' %}"></script>
+<script type="text/javascript" src="{% static 'main/js/leaflet.extra-markers.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'main/js/leaflet.markercluster.js' %}"></script>
+<script type="text/javascript" src="{% static 'main/js/leaflet.photon.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+<h5>Карта</h5>
+<div class="container">
+    <form method="get" id="mapform">
+        {{form.table}}
+    </form>
+</div>
+
+<div class="map-container">
+    <div id="map"></div>
+</div>
+
+{% endblock %}
+
+{% block footer %}
+<script>
+	map = new L.Map('map');
+	var osmUrl='{{ MAP_TILES_SERVER_URL }}/tile/{z}/{x}/{y}.png';
+	var osmAttrib=' | Данные карт © <a href="https://openstreetmap.org">OpenStreetMap</a>';
+	var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 17, attribution: osmAttrib});
+	map.setView(new L.LatLng(52.599621, 39.561885),13);
+	map.addLayer(osm);
+	{# Поиск #}
+	function formatTypeFunc (feature) {
+	    return;
+	}
+	var searchControl = L.control.photon({
+	    url: '{{ SEARCH_SERVER_URL }}/api/?',
+	    position: 'topright',
+	    placeholder: 'Поиск по адресу',
+	    noResultLabel: 'Не найдено',
+	    feedbackLabel: '',
+	    feedbackEmail: '',
+	    formatType: formatTypeFunc,
+	});
+    searchControl.addTo(map);
+
+    {# Добавление точек #}
+    var markerClusters = L.markerClusterGroup({
+        maxClusterRadius: 60,
+    });
+    var mapIcon = L.ExtraMarkers.icon({
+        {% if map_variant == 'store' %}
+            shape: 'penta',
+        {% else %}
+        {% endif %}
+    })
+
+    {% for point in points %}
+        markerClusters.addLayer(
+            L.marker([{{point.latitude}},{{point.longtitude}}], {icon: mapIcon})
+                    .bindTooltip("{{point.name}}<br>{{point.address}}")
+                    .bindPopup("<b>{{point.name}}</b><br>{{point.address}}")
+        );
+    {% endfor %}
+    map.addLayer( markerClusters );
+</script>
+{% endblock %}

@@ -1,0 +1,138 @@
+/* Custom Stylesheet */
+/**
+ * Use this file to override Materialize files so you can update
+ * the core Materialize files in the future
+ *
+ * Made By MaterializeCSS.com
+ */
+
+body, html {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.map-container {
+    height: 100%;
+}
+
+#map {
+    height: 100%;
+}
+
+.nav-wrapper {
+    width: 70%;
+    margin: 0 auto;
+}
+
+.page-footer {
+    padding-top: 0;
+}
+
+.container {
+    padding: 10px 0 20px 0;
+}
+
+.material-icons {
+    font-size: 20px;
+}
+
+.icon-block {
+  padding: 0 15px;
+}
+.icon-block .material-icons {
+	font-size: inherit;
+}
+
+nav {
+    flex-shrink: 0;
+}
+
+nav img {
+    height: 56px;
+}
+
+.pagination li {
+    color: #444;
+    display: inline-block;
+    font-size: 1.2rem;
+    padding: 0 10px;
+    line-height: 30px;
+}
+
+.errorlist {
+    font-size: 20px;
+    color: red;
+}
+
+.collapsible-body {
+    background-color: #fff;
+    padding: 1rem;
+}
+
+.route-info {
+    z-index: 9999;
+    position: absolute;
+    right: 5px;
+    width: 20%;
+    MAX-HEIGHT: calc(100% - 200px);
+    overflow: auto;
+}
+
+.route-info .single-route-directions .collapsible-body {
+    padding: 0 0 0 5px;
+}
+
+.route-info .collapsible-body .dropdown-content {
+    max-height: 40vh;
+}
+
+.route-inline-title {
+    display: inline-block;
+    padding-right: 10px;
+}
+
+.input-field {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.point-address {
+    font-size: small;
+}
+
+.point-small-info {
+    padding: 0 20px 0 20px;
+    font-size: small;
+    margin-bottom: 0px;
+}
+
+.point-distance {
+    color: green;
+}
+
+.point-time {
+    color: green;
+}
+
+/* Поиск на карте */
+.photon-input {
+    width: 200px !important;
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    border-radius: 5px !important;
+}
+.photon-input:focus {
+    width: 400px !important;
+}
+.photon-autocomplete {
+    margin-block-start: 0px;
+}
+.photon-autocomplete li.on {
+    background-color: #039be5;
+}
+
+@media only screen and (min-width: 601px) {
+    nav img {
+        height: 64px;
+    }
+}
