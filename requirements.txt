@@ -1,6 +1,6 @@
 certifi==2019.6.16
 chardet==3.0.4
-Django==2.2.13
+Django==2.2.20
 django-auth-ldap3-ad==1.6.30
 django-excel==0.0.10
 django-tinymce4-lite==1.7.5
